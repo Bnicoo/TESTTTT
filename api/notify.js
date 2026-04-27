@@ -4,17 +4,20 @@ export default async function handler(req, res) {
   }
 
   const { content, embeds } = req.body;
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  const botToken = process.env.DISCORD_BOT_TOKEN;
+  const channelId = process.env.DISCORD_CHANNEL_ID;
 
-  if (!webhookUrl) {
-    console.error('DISCORD_WEBHOOK_URL is not defined');
+  if (!botToken || !channelId) {
+    console.error('DISCORD_BOT_TOKEN or DISCORD_CHANNEL_ID is not defined');
     return res.status(500).json({ error: 'Configuration error' });
   }
 
   try {
-    const response = await fetch(webhookUrl, {
+    // API Discord pour envoyer un message dans un salon spécifique
+    const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bot ${botToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
